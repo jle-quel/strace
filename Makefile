@@ -19,6 +19,8 @@ CFLAGS			= -Wall -Wextra -Werror -I $(INC_PATH)
 
 OBJ_NAME		= main.o						\
 			  strace.o						\
+			  binary.o						\
+			  error.o						\
 
 OBJ			= $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))			\
 

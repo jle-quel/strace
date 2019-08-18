@@ -1,0 +1,20 @@
+STRACE:
+
+First I need to know if it is an ELF file, more precisely is it a 64 or a 32 ?
+Second, I need to exec the file and catch all signals receive and print it.
+Third at each syscall, handle it depending on it's context (64 or 32).
+
+RUNNING:
+
+Depending on the context of the binary, signal will be handled the same way,
+but not the syscall. so each binary will have a function pointer assigned to it.
+
+CRITERIA:
+
+read lenght of elf header and cast it into structures. Niow we can know if it is
+an ELF an/or 64 or 32.
+
+- file does not exist <OK>
+- file cannot be read <OK>
+- file is not an elf  <OK>
+- file is not a 64|32  

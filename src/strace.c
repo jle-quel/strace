@@ -6,5 +6,9 @@
 
 void strace(const char *file)
 {
-	puts(file);
+	struct s_binary binary;
+
+	binary = get_binary(file);
+
+	binary.handler();
 }
