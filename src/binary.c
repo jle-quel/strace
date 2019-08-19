@@ -1,7 +1,17 @@
 #include <strace.h>
 
+void handler32(void)
+{
+	printf("handler 32\n");
+}
+
+void handler64(void)
+{
+	printf("handler 64\n");
+}
+
 ////////////////////////////////////////////////////////////////////////////////
-/// STATIC FUNCTION
+/// STATIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
 static void _close(int *fd)
@@ -9,60 +19,57 @@ static void _close(int *fd)
 	close(*fd);
 }
 
-static bool is_elf(const int fd)
+static int is_elf(const int fd)
 {
 	char buf[4] = {0};
 
 	if (read(fd, buf, ELF_MAGIC_SIZE) == -1)
-		error(READ);
+		return READ;
 
-	return *(int *)buf == ELF_MAGIC_HASH;
+	if (*(int *)buf == ELF_MAGIC_HASH)
+		return SUCCESS;
+
+	return ELF;
 }
 
-void handler32(void)
-{
-	printf("32\n");
-}
-
-void handler64(void)
-{
-	printf("64\n");
-}
-
-static void *get_handler(const int fd)
+static int set_handler(void (**handler)(void), const int fd)
 {
 	char type;
 
 	if (read(fd, &type, ELF_CLASS_SIZE) == -1)
-		error(READ);
+		return READ;
 
-	if (type == ELFCLASS32)
-		return handler32;
-	if (type == ELFCLASS64)
-		return handler64;
+	switch (type)
+	{
+		case ELFCLASS32:
+			*handler = handler32;
+			return SUCCESS;
+		case ELFCLASS64:
+			*handler = handler64;
+			return SUCCESS;
+	}
 
-	error(CLASS);
-
-	return NULL;
+	return CLASS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-struct s_binary get_binary(const char *file)
+int get_handler(void (**handler)(void), const char *filename)
 {
+	int result;
 	__attribute__((cleanup(_close))) int fd;
-	struct s_binary binary = {0};
 
-	if (access(file, F_OK) == -1)
-		error(ACCESS);
-	if ((fd = open(file, O_RDONLY)) == -1)
-		error(OPEN);
-	if (is_elf(fd) == false)
-		error(ELF);
+	if (access(filename, F_OK) == -1)
+		return ACCESS;
+	if ((fd = open(filename, O_RDONLY)) == -1)
+		return OPEN;
 
-	binary.handler = get_handler(fd);
+	if ((result = is_elf(fd)) != SUCCESS)
+		return result;
+	if ((result = set_handler(handler, fd)) != SUCCESS)
+		return result;
 
-	return binary;
+	return SUCCESS;
 }

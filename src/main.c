@@ -4,10 +4,11 @@
 /// STATIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-static void usage(void)
+static int usage(void)
 {
 	fprintf(stderr, "strace: usage: ./ft_strace <file>\n");
-	exit(1);
+
+	return FAILURE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,9 +18,7 @@ static void usage(void)
 int main(int argc, char **argv)
 {
 	if (argc != 2)
-		usage();
+		return usage();
 
-	strace(argv[1]);
-
-	return 0;
+	return strace(argv[1]);
 }

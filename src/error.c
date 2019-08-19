@@ -43,16 +43,23 @@ int class_error(void)
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-void error(const enum e_context context)
+int error(const enum e_context context)
 {
-	int (*handler[])(void) =
+	struct s_error error[] = 
 	{
-		access_error,
-		open_error,
-		read_error,
-		elf_error,
-		class_error,
+		{ACCESS, access_error},
+		{OPEN, open_error},
+		{READ, read_error},
+		{ELF, elf_error},
+		{CLASS, class_error},
 	};
+	const int error_size = sizeof(error) / sizeof(*error);
 
-	exit(handler[context]());
+	for (register int index = 0; index < error_size; index += 1)
+	{
+		if (context == error[index].context)
+			error[index].handler();
+	}
+
+	return context;
 }

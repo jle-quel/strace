@@ -4,11 +4,15 @@
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-void strace(const char *file)
+int strace(const char *filename)
 {
-	struct s_binary binary;
+	int result;
+	void (*handler)(void);
 
-	binary = get_binary(file);
+	if ((result = get_handler(&handler, filename)) != SUCCESS)
+		return error(result);
 
-	binary.handler();
+	handler();
+
+	return SUCCESS;
 }

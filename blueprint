@@ -17,4 +17,8 @@ an ELF an/or 64 or 32.
 - file does not exist <OK>
 - file cannot be read <OK>
 - file is not an elf  <OK>
-- file is not a 64|32  
+- file is not a 64|32 <OK> 
+
+FINAL:
+
+ft_strace should print the syscall name, his parameters and the return call.

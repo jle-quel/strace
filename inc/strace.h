@@ -20,6 +20,9 @@
 /// DEFINES
 ////////////////////////////////////////////////////////////////////////////////
 
+#define SUCCESS 0
+#define FAILURE 1
+
 #define ELF_MAGIC_HASH 1179403647
 #define ELF_MAGIC_SIZE 4
 #define ELF_CLASS_SIZE 1
@@ -30,7 +33,7 @@
 
 enum e_context
 {
-	ACCESS,
+	ACCESS = 1,
 	OPEN,
 	READ,
 	ELF,
@@ -41,20 +44,20 @@ enum e_context
 /// STRUCTURES
 ////////////////////////////////////////////////////////////////////////////////
 
-struct s_binary
+struct s_error
 {
-	const char *file;
-	void (*handler)(void);
+	enum e_context context;
+	int (*handler)(void);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /// DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-void strace(const char *file);
+int strace(const char *file);
 
-struct s_binary get_binary(const char *file);
+int get_handler(void (**handler)(void), const char *file);
 
-void error(const enum e_context context);
+int error(const enum e_context context);
 
 #endif
