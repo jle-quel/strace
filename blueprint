@@ -4,14 +4,9 @@ First I need to know if it is an ELF file, more precisely is it a 64 or a 32 ?
 Second, I need to exec the file and catch all signals receive and print it.
 Third at each syscall, handle it depending on it's context (64 or 32).
 
-RUNNING:
-
-Depending on the context of the binary, signal will be handled the same way,
-but not the syscall. so each binary will have a function pointer assigned to it.
-
 CRITERIA:
 
-read lenght of elf header and cast it into structures. Niow we can know if it is
+read lenght of elf header and cast it into structures. Now we can know if it is
 an ELF an/or 64 or 32.
 
 - file does not exist <OK>
@@ -19,6 +14,24 @@ an ELF an/or 64 or 32.
 - file is not an elf  <OK>
 - file is not a 64|32 <OK> 
 
+PATH:
+
+strace can (if needed) create the path for the binary.
+
+strace /bin/ls
+strace ls -> strace /bin/ls
+
+RUNNING:
+
+Depending on the context of the binary, signal will be handled the same way,
+but not the syscall. so each binary will have a function pointer assigned to it.
+
+Difference between SEIZE and ATTACH is that ATTACH by default will sigstop the proccess, seize will not.
+
 FINAL:
 
 ft_strace should print the syscall name, his parameters and the return call.
+
+BUGS
+
+perror has a problem with getenv, always return success even tho the var foesnt exist in the environment.

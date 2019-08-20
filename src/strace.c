@@ -6,13 +6,20 @@
 
 int strace(const char *filename)
 {
-	int result;
-	void (*handler)(void);
+//	int (*handler)(const char *);
+	char *filepath;
 
-	if ((result = get_handler(&handler, filename)) != SUCCESS)
-		return error(result);
+	if ((filepath = get_filepath(filename)) == NULL)
+		return FAILURE;
 
-	handler();
+	filepath ? puts(filepath) : puts("invalid\n");
+
+	free(filepath);
+
+//	if ((result = get_handler(&handler, filename)) != SUCCESS)
+//		return error(result);
+//
+//	handler(filename);
 
 	return SUCCESS;
 }

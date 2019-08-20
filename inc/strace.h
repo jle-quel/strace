@@ -15,6 +15,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/wait.h>
+#include <sys/ptrace.h>
+#include <sys/user.h>
+#include <sys/reg.h>
+#include <limits.h>
+#include <string.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// DEFINES
@@ -38,6 +44,12 @@ enum e_context
 	READ,
 	ELF,
 	CLASS,
+	FORK,
+	READLINK,
+	GETENV,
+	STRTOK,
+	MALLOC,
+	STRDUP,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -50,13 +62,22 @@ struct s_error
 	int (*handler)(void);
 };
 
+struct s_filepath
+{
+	char *path;
+	char *token;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 /// DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-int strace(const char *file);
+int strace(const char *filename);
+int handler_32(const char *filename);
+int handler_64(const char *filename);
 
-int get_handler(void (**handler)(void), const char *file);
+int get_handler(int (**handler)(const char *), const char *filename);
+char *get_filepath(const char *filename);
 
 int error(const enum e_context context);
 

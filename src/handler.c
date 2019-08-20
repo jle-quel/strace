@@ -1,15 +1,5 @@
 #include <strace.h>
 
-void handler32(void)
-{
-	printf("handler 32\n");
-}
-
-void handler64(void)
-{
-	printf("handler 64\n");
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 /// STATIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +22,7 @@ static int is_elf(const int fd)
 	return ELF;
 }
 
-static int set_handler(void (**handler)(void), const int fd)
+static int set_handler(int (**handler)(const char *), const int fd)
 {
 	char type;
 
@@ -42,10 +32,10 @@ static int set_handler(void (**handler)(void), const int fd)
 	switch (type)
 	{
 		case ELFCLASS32:
-			*handler = handler32;
+			*handler = handler_32;
 			return SUCCESS;
 		case ELFCLASS64:
-			*handler = handler64;
+			*handler = handler_64;
 			return SUCCESS;
 	}
 
@@ -56,7 +46,7 @@ static int set_handler(void (**handler)(void), const int fd)
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-int get_handler(void (**handler)(void), const char *filename)
+int get_handler(int (**handler)(const char *), const char *filename)
 {
 	int result;
 	__attribute__((cleanup(_close))) int fd;
