@@ -43,7 +43,7 @@ void syscall_64(const struct s_binary *binary)
 {
 	const char *syscall = get_syscall_64(binary->regs.orig_rax);
 
-	fprintf(stderr, "%s", syscall); 
+	fprintf(stderr, "%s", syscall);
 	fprintf(stderr, "(");
 }
 
@@ -54,7 +54,7 @@ void parameter_32(const struct s_binary *binary)
 
 void parameter_64(const struct s_binary *binary)
 {
-	const unsigned long long registers[] = 
+	const unsigned long long registers[] =
 	{
 		binary->regs.rdi,
 		binary->regs.rsi,
@@ -67,7 +67,7 @@ void parameter_64(const struct s_binary *binary)
 
 	for (register int index = 0; index < nparameters; index += 1)
 	{
-		fprintf(stderr, "0x%llx", registers[index]); 
+		fprintf(stderr, "0x%llx", registers[index]);
 
 		if (index + 1 < nparameters)
 			fprintf(stderr, ", ");

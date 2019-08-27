@@ -4,18 +4,40 @@
 /// STATIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-int tracee(struct s_binary *binary)
+static bool is_killing_signal(const int signum)
+{
+	const int sig[] =
+	{
+		SIGHUP,
+		SIGINT,
+		SIGQUIT,
+		SIGSEGV,
+		SIGABRT,
+		SIGTERM,
+		SIGSTOP,
+		SIGTSTP,
+	};
+	const int size = sizeof(sig) / sizeof(*sig);
+
+	for (register int index = 0; index < size; index += 1)
+	{
+		if (signum == sig[index])
+			return true;
+	}
+
+	return false;
+}
+
+static int tracee(const struct s_binary *binary)
 {
 	extern char **environ;
-
-	binary->pid = getpid();
 
 	kill(binary->pid, SIGSTOP);
 	execve(binary->filepath, binary->argv, environ);
 	exit(error(EXECVE));
 }
 
-int tracer(struct s_binary *binary)
+static int tracer(const struct s_binary *binary)
 {
 	int status;
 	int id = 0;
@@ -52,7 +74,12 @@ int tracer(struct s_binary *binary)
 				id += 1;
 			}
 			else
+			{
 				printf("\n[+] process receive signal %d\n\n", WSTOPSIG(status));
+
+				if (is_killing_signal(WSTOPSIG(status)) == true)
+					break;
+			}
 		}
 
 		if (WIFEXITED(status) == true)
@@ -77,7 +104,10 @@ int execution(struct s_binary *binary)
 		return FORK;
 
 	if (binary->pid == 0)
+	{
+		binary->pid = getpid();
 		tracee(binary);
+	}
 	else
 		if ((result = tracer(binary)) != SUCCESS)
 			return result;
