@@ -1,7 +1,7 @@
 #include <strace.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// STATIC FUNCTIONS
+/// STATIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool is_killing_signal(const int signum)
@@ -28,7 +28,11 @@ static bool is_killing_signal(const int signum)
 	return false;
 }
 
-static int tracee(const struct s_binary *binary)
+////////////////////////////////////////////////////////////////////////////////
+/// PUBLIC FUNCTIONS
+////////////////////////////////////////////////////////////////////////////////
+
+int tracee(const struct s_binary *binary)
 {
 	extern char **environ;
 
@@ -37,7 +41,7 @@ static int tracee(const struct s_binary *binary)
 	exit(error(EXECVE));
 }
 
-static int tracer(const struct s_binary *binary)
+int tracer(const struct s_binary *binary)
 {
 	int status;
 	int id = 0;
@@ -88,29 +92,6 @@ static int tracer(const struct s_binary *binary)
 			break;
 		}
 	}
-
-	return SUCCESS;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/// PUBLIC FUNCTION
-////////////////////////////////////////////////////////////////////////////////
-
-int execution(struct s_binary *binary)
-{
-	int result;
-
-	if ((binary->pid = fork()) == -1)
-		return FORK;
-
-	if (binary->pid == 0)
-	{
-		binary->pid = getpid();
-		tracee(binary);
-	}
-	else
-		if ((result = tracer(binary)) != SUCCESS)
-			return result;
 
 	return SUCCESS;
 }

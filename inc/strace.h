@@ -90,7 +90,6 @@ struct s_systable
 
 int strace(char **argv);
 
-int binary_constructor(char **argv, struct s_binary *binary);
 void binary_deconstructor(struct s_binary *binary);
 void title_32(const struct s_binary *binary);
 void title_64(const struct s_binary *binary);
@@ -101,13 +100,16 @@ void parameter_64(const struct s_binary *binary);
 void result_32(const struct s_binary *binary);
 void result_64(const struct s_binary *binary);
 
+int tracer(const struct s_binary *binary);
+int tracee(const struct s_binary *binary);
+
+int binary_constructor(char **argv, struct s_binary *binary);
+
 const char *get_syscall_64(const int id);
 int get_nparameters_64(const int id);
 
 int get_filepath(const char *filename, struct s_binary *binary);
 int get_handler(struct s_binary *binary);
-
-int execution(struct s_binary *binary);
 
 int error(const enum e_context context);
 

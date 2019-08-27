@@ -54,7 +54,7 @@ void parameter_32(const struct s_binary *binary)
 
 void parameter_64(const struct s_binary *binary)
 {
-	const unsigned long long registers[] =
+	const typeof(binary->regs.orig_rax) registers[] =
 	{
 		binary->regs.rdi,
 		binary->regs.rsi,
