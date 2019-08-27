@@ -61,12 +61,14 @@ enum e_context
 struct s_binary
 {
 	char *filepath;
-	char **parameters;
+	char **argv;
 	pid_t pid;
 	struct user_regs_struct regs;
 
 	void (*title)(const struct s_binary *binary);
 	void (*syscall)(const struct s_binary *binary);
+	void (*parameter)(const struct s_binary *binary);
+	void (*result)(const struct s_binary *binary);
 };
 
 struct s_error
@@ -94,6 +96,10 @@ void title_32(const struct s_binary *binary);
 void title_64(const struct s_binary *binary);
 void syscall_32(const struct s_binary *binary);
 void syscall_64(const struct s_binary *binary);
+void parameter_32(const struct s_binary *binary);
+void parameter_64(const struct s_binary *binary);
+void result_32(const struct s_binary *binary);
+void result_64(const struct s_binary *binary);
 
 const char *get_syscall_64(const int id);
 int get_nparameters_64(const int id);

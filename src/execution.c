@@ -11,7 +11,7 @@ int tracee(struct s_binary *binary)
 	binary->pid = getpid();
 
 	kill(binary->pid, SIGSTOP);
-	execve(binary->filepath, binary->parameters, environ);
+	execve(binary->filepath, binary->argv, environ);
 	exit(error(EXECVE));
 }
 
@@ -44,7 +44,10 @@ int tracer(struct s_binary *binary)
 				if (id % 2 == 0)
 				{
 					binary->syscall(binary);
+					binary->parameter(binary);
 				}
+				else
+					binary->result(binary);
 
 				id += 1;
 			}
@@ -54,7 +57,7 @@ int tracer(struct s_binary *binary)
 
 		if (WIFEXITED(status) == true)
 		{
-			printf("\n[+] process exited with %d\n", WEXITSTATUS(status));
+			printf("\n\n[+] process exited with %d\n", WEXITSTATUS(status));
 			break;
 		}
 	}

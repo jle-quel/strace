@@ -35,11 +35,15 @@ static int set_handler(struct s_binary *binary, const int fd)
 		case ELFCLASS32:
 			binary->title = title_32;
 			binary->syscall = syscall_32;
+			binary->parameter = parameter_32;
+			binary->result = result_32;
 
 			return SUCCESS;
 		case ELFCLASS64:
 			binary->title = title_64;
 			binary->syscall = syscall_64;
+			binary->parameter = parameter_64;
+			binary->result = result_64;
 
 			return SUCCESS;
 	}

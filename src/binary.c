@@ -14,7 +14,7 @@ int binary_constructor(char **argv, struct s_binary *binary)
 	if ((result = get_handler(binary)) != SUCCESS)
 		return result;
 
-	binary->parameters = argv;
+	binary->argv = argv;
 
 	return SUCCESS;
 }
@@ -34,12 +34,27 @@ void title_64(const struct s_binary *binary)
 	printf("[+] Executing %s as process %d in 64 bit mode\n\n", binary->filepath, binary->pid);
 }
 
+void syscall_32(const struct s_binary *binary)
+{
+	(void)binary;
+}
+
 void syscall_64(const struct s_binary *binary)
 {
 	const char *syscall = get_syscall_64(binary->regs.orig_rax);
-	const int nparameters = get_nparameters_64(binary->regs.orig_rax);
 
-	const size_t registers[] = 
+	fprintf(stderr, "%s", syscall); 
+	fprintf(stderr, "(");
+}
+
+void parameter_32(const struct s_binary *binary)
+{
+	(void)binary;
+}
+
+void parameter_64(const struct s_binary *binary)
+{
+	const unsigned long long registers[] = 
 	{
 		binary->regs.rdi,
 		binary->regs.rsi,
@@ -48,13 +63,11 @@ void syscall_64(const struct s_binary *binary)
 		binary->regs.r8,
 		binary->regs.r9,
 	};
-
-	fprintf(stderr, "%s", syscall); 
-	fprintf(stderr, "(");
+	const int nparameters = get_nparameters_64(binary->regs.orig_rax);
 
 	for (register int index = 0; index < nparameters; index += 1)
 	{
-		fprintf(stderr, "0x%lx", registers[index]); 
+		fprintf(stderr, "0x%llx", registers[index]); 
 
 		if (index + 1 < nparameters)
 			fprintf(stderr, ", ");
@@ -63,11 +76,15 @@ void syscall_64(const struct s_binary *binary)
 	if (binary->regs.orig_rax == SYS_write)
 		fprintf(stderr, ") -> ");
 	else
-		fprintf(stderr, ")\n");
-
+		fprintf(stderr, ")");
 }
 
-void syscall_32(const struct s_binary *binary)
+void result_32(const struct s_binary *binary)
 {
 	(void)binary;
+}
+
+void result_64(const struct s_binary *binary)
+{
+	fprintf(stderr, " = 0x%llx\n", binary->regs.rax);
 }
