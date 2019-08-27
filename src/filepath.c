@@ -9,7 +9,7 @@ static char *create_filepath(const char *filename)
 	char *filepath;
 
 	if ((filepath = strdup(filename)) == NULL)
-		error(STRDUP);
+		return NULL;
 
 	return filepath;
 }
@@ -20,10 +20,7 @@ static char *create_absolute_filepath(const char *token, const char *filename)
 	const size_t length = strlen(token) + strlen("/") + strlen(filename) + 1;
 
 	if ((filepath = malloc(sizeof(char) * length)) == NULL)
-	{
-		error(MALLOC);
 		return NULL;
-	}
 
 	bzero(filepath, length);
 	strcpy(filepath, token);
@@ -37,13 +34,13 @@ static char *create_absolute_filepath(const char *token, const char *filename)
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-char *get_filepath(const char *filename)
+int get_filepath(const char *filename, struct s_binary *binary)
 {
 	char *filepath;
 	char *path;
 	char *token;
 
-	if (filename[0] != '/')
+	if (*filename != '/')
 	{
 		if ((path = getenv("PATH")) != NULL)
 		{
@@ -52,16 +49,22 @@ char *get_filepath(const char *filename)
 			while (token)
 			{
 				if ((filepath = create_absolute_filepath(token, filename)) == NULL)
-					return NULL;
-
+					return MALLOC;
 				if (access(filepath, F_OK) == 0)
-					return filepath;
+					break;
 
 				token = strtok(NULL, ":");
 				free(filepath);
+				filepath = NULL;
 			}
 		}
 	}
 
-	return create_filepath(filename);
+	if (filepath)
+		binary->filepath = filepath;
+	else
+		if ((binary->filepath = create_filepath(filename)) == NULL)
+			return STRDUP;
+
+	return SUCCESS;
 }

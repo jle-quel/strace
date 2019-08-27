@@ -22,20 +22,25 @@ static int is_elf(const int fd)
 	return ELF;
 }
 
-static int set_handler(int (**handler)(const char *), const int fd)
+static int set_handler(struct s_binary *binary, const int fd)
 {
 	char type;
 
 	if (read(fd, &type, ELF_CLASS_SIZE) == -1)
 		return READ;
 
+
 	switch (type)
 	{
 		case ELFCLASS32:
-			*handler = handler_32;
+			binary->title = title_32;
+			binary->syscall = syscall_32;
+
 			return SUCCESS;
 		case ELFCLASS64:
-			*handler = handler_64;
+			binary->title = title_64;
+			binary->syscall = syscall_64;
+
 			return SUCCESS;
 	}
 
@@ -46,19 +51,19 @@ static int set_handler(int (**handler)(const char *), const int fd)
 /// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-int get_handler(int (**handler)(const char *), const char *filename)
+int get_handler(struct s_binary *binary)
 {
 	int result;
 	__attribute__((cleanup(_close))) int fd;
 
-	if (access(filename, F_OK) == -1)
+	if (access(binary->filepath, F_OK) == -1)
 		return ACCESS;
-	if ((fd = open(filename, O_RDONLY)) == -1)
+	if ((fd = open(binary->filepath, O_RDONLY)) == -1)
 		return OPEN;
 
 	if ((result = is_elf(fd)) != SUCCESS)
 		return result;
-	if ((result = set_handler(handler, fd)) != SUCCESS)
+	if ((result = set_handler(binary, fd)) != SUCCESS)
 		return result;
 
 	return SUCCESS;

@@ -21,6 +21,7 @@
 #include <sys/reg.h>
 #include <limits.h>
 #include <string.h>
+#include <sys/syscall.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// DEFINES
@@ -39,7 +40,8 @@
 
 enum e_context
 {
-	ACCESS = 1,
+	USAGE = 1,
+	ACCESS,
 	OPEN,
 	READ,
 	ELF,
@@ -47,37 +49,59 @@ enum e_context
 	FORK,
 	READLINK,
 	GETENV,
-	STRTOK,
 	MALLOC,
 	STRDUP,
+	EXECVE,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /// STRUCTURES
 ////////////////////////////////////////////////////////////////////////////////
 
+struct s_binary
+{
+	char *filepath;
+	char **parameters;
+	pid_t pid;
+	struct user_regs_struct regs;
+
+	void (*title)(const struct s_binary *binary);
+	void (*syscall)(const struct s_binary *binary);
+};
+
 struct s_error
 {
 	enum e_context context;
-	int (*handler)(void);
+	void (*handler)(void);
 };
 
-struct s_filepath
+struct s_systable
 {
-	char *path;
-	char *token;
+	int id;
+	char *name;
+	int nparameters;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 /// DECLARATIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-int strace(const char *filename);
-int handler_32(const char *filename);
-int handler_64(const char *filename);
+int strace(char **argv);
 
-int get_handler(int (**handler)(const char *), const char *filename);
-char *get_filepath(const char *filename);
+int binary_constructor(char **argv, struct s_binary *binary);
+void binary_deconstructor(struct s_binary *binary);
+void title_32(const struct s_binary *binary);
+void title_64(const struct s_binary *binary);
+void syscall_32(const struct s_binary *binary);
+void syscall_64(const struct s_binary *binary);
+
+const char *get_syscall_64(const int id);
+int get_nparameters_64(const int id);
+
+int get_filepath(const char *filename, struct s_binary *binary);
+int get_handler(struct s_binary *binary);
+
+int execution(struct s_binary *binary);
 
 int error(const enum e_context context);
 

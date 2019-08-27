@@ -1,14 +1,21 @@
 #include <strace.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-/// STATIC FUNCTION
+/// PUBLIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-static int usage(void)
+int strace(char **argv)
 {
-	fprintf(stderr, "strace: usage: ./ft_strace <file>\n");
+	int result;
+	__attribute__((cleanup(binary_deconstructor))) struct s_binary binary = {0};
 
-	return FAILURE;
+	if ((result = binary_constructor(argv, &binary)) != SUCCESS)
+		return error(result);
+
+	if ((result = execution(&binary)) != SUCCESS)
+		return error(result);
+
+	return SUCCESS;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,8 +24,8 @@ static int usage(void)
 
 int main(int argc, char **argv)
 {
-	if (argc != 2)
-		return usage();
+	if (argc < 2)
+		return error(USAGE);
 
-	return strace(argv[1]);
+	return strace(argv + 1);
 }

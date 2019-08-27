@@ -4,81 +4,59 @@
 /// STATIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-int access_error(void)
+static void _usage(void)
+{
+	fprintf(stderr, "strace: usage: ./ft_strace <binary> <argv>\n");
+}
+
+static void _access(void)
 {
 	perror("strace: access");
-
-	return errno;
 }
 
-int open_error(void)
+static void _open(void)
 {
 	perror("strace: open");
-
-	return errno;
 }
 
-int read_error(void)
+static void _read(void)
 {
 	perror("strace: read");
-
-	return errno;
 }
 
-int elf_error(void)
+static void _elf(void)
 {
-	fprintf(stderr, "strace: file given is not an ELF\n");
-
-	return -1;
+	fprintf(stderr, "strace: not an ELF file format\n");
 }
 
-int class_error(void)
+static void _class(void)
 {
-	fprintf(stderr, "strace: file given is neither 32 or 64\n");
-
-	return -1;
+	fprintf(stderr, "strace: not an 64 or 32 biti mode\n");
 }
 
-int fork_error(void)
+static void _fork(void)
 {
 	perror("strace: fork");
-
-	return errno;
 }
 
-int readlink_error(void)
-{
-	perror("strace: readlink");
-
-	return errno;
-}
-
-int getenv_error(void)
+static void _getenv(void)
 {
 	perror("strace: getenv");
-
-	return errno;
 }
 
-int strtok_error(void)
-{
-	perror("strace: strtok");
-
-	return errno;
-}
-
-int malloc_error(void)
+static void _malloc(void)
 {
 	perror("strace: malloc");
-
-	return errno;
 }
 
-int strdup_error(void)
+static void _strdup(void)
 {
 	perror("strace: strdup");
+}
 
-	return errno;
+static void _execve(void)
+{
+	perror("strace: execve");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,19 +65,19 @@ int strdup_error(void)
 
 int error(const enum e_context context)
 {
-	struct s_error error[] = 
+	const struct s_error error[] = 
 	{
-		{ACCESS, access_error},
-		{OPEN, open_error},
-		{READ, read_error},
-		{ELF, elf_error},
-		{CLASS, class_error},
-		{FORK, fork_error},
-		{READLINK, readlink_error},
-		{GETENV, getenv_error},
-		{STRTOK, strtok_error},
-		{MALLOC, malloc_error},
-		{STRDUP, strdup_error},
+		{USAGE, _usage},
+		{ACCESS, _access},
+		{OPEN, _open},
+		{READ, _read},
+		{ELF, _elf},
+		{CLASS, _class},
+		{FORK, _fork},
+		{GETENV, _getenv},
+		{MALLOC, _malloc},
+		{STRDUP, _strdup},
+		{EXECVE, _execve},
 	};
 	const int error_size = sizeof(error) / sizeof(*error);
 

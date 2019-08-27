@@ -11,19 +11,19 @@ OBJ_PATH		= obj
 INC_PATH		= inc
 
 CC			= gcc
-CFLAGS			= -Wall -Wextra -Werror -I $(INC_PATH) -g3 -fsanitize=address
+CFLAGS			= -Wall -Wextra -Werror -I $(INC_PATH) #-g3 -fsanitize=address
 
 ################################################################################
 ### OBJECTS
 ################################################################################
 
 OBJ_NAME		= main.o						\
-			  strace.o						\
-			  filepath.o						\
-			  handler.o						\
-			  handler_32.o						\
-			  handler_64.o						\
 			  error.o						\
+			  binary.o						\
+			  filepath.o						\
+			  execution.o						\
+			  handler.o						\
+			  systable.o						\
 
 OBJ			= $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))			\
 
