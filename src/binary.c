@@ -86,5 +86,8 @@ void result_32(const struct s_binary *binary)
 
 void result_64(const struct s_binary *binary)
 {
-	fprintf(stderr, " = 0x%llx\n", binary->regs.rax);
+	if ((long long)binary->regs.rax < 0)
+		fprintf(stderr, " = -1\n");
+	else
+		fprintf(stderr, " = 0x%llx\n", binary->regs.rax);
 }

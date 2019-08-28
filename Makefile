@@ -21,7 +21,7 @@ OBJ_NAME		= main.o						\
 			  error.o						\
 			  binary.o						\
 			  filepath.o						\
-			  execution.o						\
+			  trace.o						\
 			  handler.o						\
 			  systable.o						\
 

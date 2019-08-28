@@ -31,7 +31,7 @@ static void _elf(void)
 
 static void _class(void)
 {
-	fprintf(stderr, "strace: not an 64 or 32 biti mode\n");
+	fprintf(stderr, "strace: not an 64 or 32 bit mode\n");
 }
 
 static void _fork(void)

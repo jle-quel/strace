@@ -4,7 +4,7 @@
 /// STATIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool is_killing_signal(const int signum)
+bool is_killing_signal(const int signum)
 {
 	const int sig[] =
 	{
@@ -41,6 +41,7 @@ int tracee(const struct s_binary *binary)
 	exit(error(EXECVE));
 }
 
+// Handle all errors
 int tracer(const struct s_binary *binary)
 {
 	int status;
@@ -49,15 +50,15 @@ int tracer(const struct s_binary *binary)
 
 	binary->title(binary);
 
-	sigemptyset(&set);
-	sigprocmask(SIG_SETMASK, &set, NULL);
-
 	ptrace(PTRACE_SEIZE, binary->pid, NULL, NULL);
 	waitpid(binary->pid, &status, 0);
 	ptrace(PTRACE_SETOPTIONS, binary->pid, 0, PTRACE_O_TRACESYSGOOD);
 
 	while (true)
 	{
+		sigemptyset(&set);
+		sigprocmask(SIG_SETMASK, &set, NULL);
+
 		ptrace(PTRACE_SYSCALL, binary->pid, NULL, NULL);
 		waitpid(binary->pid, &status, 0);
 
@@ -81,8 +82,8 @@ int tracer(const struct s_binary *binary)
 			{
 				printf("\n[+] process receive signal %d\n\n", WSTOPSIG(status));
 
-				if (is_killing_signal(WSTOPSIG(status)) == true)
-					break;
+	//			if (is_killing_signal(WSTOPSIG(status)) == true)
+			//		break;
 			}
 		}
 
@@ -91,6 +92,13 @@ int tracer(const struct s_binary *binary)
 			printf("\n\n[+] process exited with %d\n", WEXITSTATUS(status));
 			break;
 		}
+
+		sigaddset(&set, SIGHUP);
+		sigaddset(&set, SIGINT);
+		sigaddset(&set, SIGQUIT);
+		sigaddset(&set, SIGPIPE);
+		sigaddset(&set, SIGTERM);
+		sigprocmask(SIG_BLOCK, &set, NULL);
 	}
 
 	return SUCCESS;
