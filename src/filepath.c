@@ -36,9 +36,9 @@ static char *create_absolute_filepath(const char *token, const char *filename)
 
 int get_filepath(const char *filename, struct s_binary *binary)
 {
-	char *filepath;
-	char *path;
-	char *token;
+	char *filepath = NULL;
+	char *path = NULL;
+	char *token = NULL;
 
 	if (*filename != '/')
 	{
