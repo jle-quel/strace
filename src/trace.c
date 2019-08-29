@@ -4,28 +4,24 @@
 /// STATIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
 
-bool is_killing_signal(const int signum)
+static inline int _wait(const pid_t pid)
 {
-	const int sig[] =
-	{
-		SIGHUP,
-		SIGINT,
-		SIGQUIT,
-		SIGSEGV,
-		SIGABRT,
-		SIGTERM,
-		SIGSTOP,
-		SIGTSTP,
-	};
-	const int size = sizeof(sig) / sizeof(*sig);
+	int status;
+	static sigset_t set = {0};
 
-	for (register int index = 0; index < size; index += 1)
-	{
-		if (signum == sig[index])
-			return true;
-	}
+	sigemptyset(&set);
+	sigprocmask(SIG_SETMASK, &set, NULL);
 
-	return false;
+	waitpid(pid, &status, WUNTRACED);
+
+	sigaddset(&set, SIGHUP);
+	sigaddset(&set, SIGINT);
+	sigaddset(&set, SIGQUIT);
+	sigaddset(&set, SIGPIPE);
+	sigaddset(&set, SIGTERM);
+	sigprocmask(SIG_BLOCK, &set, NULL);
+
+	return status;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,26 +37,32 @@ int tracee(const struct s_binary *binary)
 	exit(error(EXECVE));
 }
 
-// Handle all errors
 int tracer(const struct s_binary *binary)
 {
 	int status;
 	int id = 0;
-	static sigset_t	set = {0};
 
 	binary->title(binary);
 
 	ptrace(PTRACE_SEIZE, binary->pid, NULL, NULL);
-	waitpid(binary->pid, &status, 0);
+	status = _wait(binary->pid);
 	ptrace(PTRACE_SETOPTIONS, binary->pid, 0, PTRACE_O_TRACESYSGOOD);
 
 	while (true)
 	{
-		sigemptyset(&set);
-		sigprocmask(SIG_SETMASK, &set, NULL);
-
 		ptrace(PTRACE_SYSCALL, binary->pid, NULL, NULL);
-		waitpid(binary->pid, &status, 0);
+		status = _wait(binary->pid);
+
+		if (WIFSIGNALED(status) == true)
+		{
+			printf("\n\n[+] process exited with signal %d\n", WTERMSIG(status));
+			break ;
+		}
+		if (WIFEXITED(status) == true)
+		{
+			printf("\n\n[+] process exited with exit %d\n", WEXITSTATUS(status));
+			break ;
+		}
 
 		if (WIFSTOPPED(status) == true)
 		{
@@ -79,26 +81,8 @@ int tracer(const struct s_binary *binary)
 				id += 1;
 			}
 			else
-			{
 				printf("\n[+] process receive signal %d\n\n", WSTOPSIG(status));
-
-	//			if (is_killing_signal(WSTOPSIG(status)) == true)
-			//		break;
-			}
 		}
-
-		if (WIFEXITED(status) == true)
-		{
-			printf("\n\n[+] process exited with %d\n", WEXITSTATUS(status));
-			break;
-		}
-
-		sigaddset(&set, SIGHUP);
-		sigaddset(&set, SIGINT);
-		sigaddset(&set, SIGQUIT);
-		sigaddset(&set, SIGPIPE);
-		sigaddset(&set, SIGTERM);
-		sigprocmask(SIG_BLOCK, &set, NULL);
 	}
 
 	return SUCCESS;

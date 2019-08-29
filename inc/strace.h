@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #define SUCCESS 0
-#define FAILURE 1
+#define FAILURE -1
 
 #define ELF_MAGIC_HASH 1179403647
 #define ELF_MAGIC_SIZE 4
