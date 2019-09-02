@@ -40,7 +40,8 @@ int tracee(const struct s_binary *binary)
 int tracer(const struct s_binary *binary)
 {
 	int status;
-	int id = 0;
+	int sig = 0;
+	size_t id = 0;
 
 	binary->title(binary);
 
@@ -50,7 +51,7 @@ int tracer(const struct s_binary *binary)
 
 	while (true)
 	{
-		ptrace(PTRACE_SYSCALL, binary->pid, NULL, NULL);
+		ptrace(PTRACE_SYSCALL, binary->pid, NULL, sig); 
 		status = _wait(binary->pid);
 
 		if (WIFSIGNALED(status) == true)
@@ -77,15 +78,13 @@ int tracer(const struct s_binary *binary)
 				else
 					binary->result(binary);
 
+				sig = 0;
 				id += 1;
 			}
 			else
 			{
-				printf("\n[+] process receive signal %d\n", WSTOPSIG(status));
-				if (WSTOPSIG(status) == SIGSEGV)
-					break ;
-				else
-					printf("\n");
+				sig = WSTOPSIG(status);
+				printf("\n[+] process receive signal %d\n\n", WSTOPSIG(status));
 			}
 		}
 	}

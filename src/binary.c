@@ -34,11 +34,6 @@ void title_64(const struct s_binary *binary)
 	printf("[+] Executing %s as process %d in 64 bit mode\n\n", binary->filepath, binary->pid);
 }
 
-void tail(const struct s_binary *binary)
-{
-	printf("\n\n[+] Detaching from process %d\n", binary->pid);
-}
-
 void syscall_32(const struct s_binary *binary)
 {
 	const char *syscall = get_syscall_32(binary->regs.orig_rax);
@@ -70,7 +65,7 @@ void parameter_32(const struct s_binary *binary)
 		stack_value += 4;
 	}
 
-	if (binary->regs.orig_rax == SYS_write_32)
+	if (binary->regs.orig_rax == SYS_WRITE_32)
 		fprintf(stderr, ") -> ");
 	else
 		fprintf(stderr, ")");
@@ -97,10 +92,15 @@ void parameter_64(const struct s_binary *binary)
 			fprintf(stderr, ", ");
 	}
 
-	if (binary->regs.orig_rax == SYS_write_64)
+	if (binary->regs.orig_rax == SYS_WRITE_64)
 		fprintf(stderr, ") -> ");
 	else
 		fprintf(stderr, ")");
+}
+
+void tail(const struct s_binary *binary)
+{
+	printf("\n\n[+] Detaching from process %d\n", binary->pid);
 }
 
 void result(const struct s_binary *binary)

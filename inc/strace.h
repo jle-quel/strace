@@ -9,20 +9,21 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
-
 #include <errno.h>
 #include <elf.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <limits.h>
+#include <string.h>
+#include <signal.h>
+#include <time.h>
+
+#include <sys/reg.h>
+#include <sys/syscall.h>
 #include <sys/wait.h>
 #include <sys/ptrace.h>
 #include <sys/user.h>
-#include <sys/reg.h>
-#include <limits.h>
-#include <string.h>
-#include <sys/syscall.h>
-#include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /// DEFINES
@@ -35,8 +36,8 @@
 #define ELF_MAGIC_SIZE 4
 #define ELF_CLASS_SIZE 1
 
-#define SYS_write_64 1
-#define SYS_write_32 4
+#define SYS_WRITE_64 1
+#define SYS_WRITE_32 4
 
 ////////////////////////////////////////////////////////////////////////////////
 /// ENUMS
