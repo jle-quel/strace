@@ -25,6 +25,7 @@ OBJ_NAME		= main.o						\
 			  handler.o						\
 			  systable_64.o						\
 			  systable_32.o						\
+			  signal.o						\
 
 OBJ			= $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))			\
 

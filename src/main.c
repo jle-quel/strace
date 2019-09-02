@@ -1,5 +1,7 @@
 #include <strace.h>
 
+struct s_binary binary = {0};
+
 ////////////////////////////////////////////////////////////////////////////////
 /// STATIC FUNCTION
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,13 +32,14 @@ static int execution(struct s_binary *binary)
 int strace(char **argv)
 {
 	int result;
-	__attribute__((cleanup(binary_deconstructor))) struct s_binary binary = {0};
 
 	if ((result = binary_constructor(argv, &binary)) != SUCCESS)
 		return error(result);
 
 	if ((result = execution(&binary)) != SUCCESS)
 		return error(result);
+
+	binary_destructor(&binary);
 
 	return SUCCESS;
 }

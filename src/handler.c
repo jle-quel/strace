@@ -30,6 +30,7 @@ static int set_handler(struct s_binary *binary, const int fd)
 		return READ;
 
 	binary->result = result;
+	binary->tail = tail;
 
 	switch (type)
 	{

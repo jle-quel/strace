@@ -19,7 +19,7 @@ int binary_constructor(char **argv, struct s_binary *binary)
 	return SUCCESS;
 }
 
-void binary_deconstructor(struct s_binary *binary)
+void binary_destructor(struct s_binary *binary)
 {
 	free(binary->filepath);
 }
@@ -32,6 +32,11 @@ void title_32(const struct s_binary *binary)
 void title_64(const struct s_binary *binary)
 {
 	printf("[+] Executing %s as process %d in 64 bit mode\n\n", binary->filepath, binary->pid);
+}
+
+void tail(const struct s_binary *binary)
+{
+	printf("\n\n[+] Detaching from process %d\n", binary->pid);
 }
 
 void syscall_32(const struct s_binary *binary)
