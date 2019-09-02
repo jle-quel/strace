@@ -36,7 +36,10 @@ void title_64(const struct s_binary *binary)
 
 void syscall_32(const struct s_binary *binary)
 {
-	(void)binary;
+	const char *syscall = get_syscall_32(binary->regs.orig_rax);
+
+	fprintf(stderr, "%s", syscall);
+	fprintf(stderr, "(");
 }
 
 void syscall_64(const struct s_binary *binary)
@@ -49,7 +52,23 @@ void syscall_64(const struct s_binary *binary)
 
 void parameter_32(const struct s_binary *binary)
 {
-	(void)binary;
+	int stack_value = 0;
+	const int nparameters = get_nparameters_32(binary->regs.orig_rax);
+
+	for (register int index = 0; index < nparameters; index += 1)
+	{
+		fprintf(stderr, "0x%llx", binary->regs.rsp + stack_value);
+
+		if (index + 1 < nparameters)
+			fprintf(stderr, ", ");
+
+		stack_value += 4;
+	}
+
+	if (binary->regs.orig_rax == SYS_write_32)
+		fprintf(stderr, ") -> ");
+	else
+		fprintf(stderr, ")");
 }
 
 void parameter_64(const struct s_binary *binary)
@@ -73,18 +92,13 @@ void parameter_64(const struct s_binary *binary)
 			fprintf(stderr, ", ");
 	}
 
-	if (binary->regs.orig_rax == SYS_write)
+	if (binary->regs.orig_rax == SYS_write_64)
 		fprintf(stderr, ") -> ");
 	else
 		fprintf(stderr, ")");
 }
 
-void result_32(const struct s_binary *binary)
-{
-	(void)binary;
-}
-
-void result_64(const struct s_binary *binary)
+void result(const struct s_binary *binary)
 {
 	if ((long long)binary->regs.rax < 0)
 		fprintf(stderr, " = 0x%x\n", -1);

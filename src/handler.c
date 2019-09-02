@@ -29,6 +29,7 @@ static int set_handler(struct s_binary *binary, const int fd)
 	if (read(fd, &type, ELF_CLASS_SIZE) == -1)
 		return READ;
 
+	binary->result = result;
 
 	switch (type)
 	{
@@ -36,14 +37,12 @@ static int set_handler(struct s_binary *binary, const int fd)
 			binary->title = title_32;
 			binary->syscall = syscall_32;
 			binary->parameter = parameter_32;
-			binary->result = result_32;
 
 			return SUCCESS;
 		case ELFCLASS64:
 			binary->title = title_64;
 			binary->syscall = syscall_64;
 			binary->parameter = parameter_64;
-			binary->result = result_64;
 
 			return SUCCESS;
 	}

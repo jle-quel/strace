@@ -34,6 +34,9 @@
 #define ELF_MAGIC_SIZE 4
 #define ELF_CLASS_SIZE 1
 
+#define SYS_write_64 1
+#define SYS_write_32 4
+
 ////////////////////////////////////////////////////////////////////////////////
 /// ENUMS
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,14 +100,15 @@ void syscall_32(const struct s_binary *binary);
 void syscall_64(const struct s_binary *binary);
 void parameter_32(const struct s_binary *binary);
 void parameter_64(const struct s_binary *binary);
-void result_32(const struct s_binary *binary);
-void result_64(const struct s_binary *binary);
+void result(const struct s_binary *binary);
 
 int tracer(const struct s_binary *binary);
 int tracee(const struct s_binary *binary);
 
 int binary_constructor(char **argv, struct s_binary *binary);
 
+const char *get_syscall_32(const int id);
+int get_nparameters_32(const int id);
 const char *get_syscall_64(const int id);
 int get_nparameters_64(const int id);
 

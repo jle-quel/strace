@@ -23,7 +23,8 @@ OBJ_NAME		= main.o						\
 			  filepath.o						\
 			  trace.o						\
 			  handler.o						\
-			  systable.o						\
+			  systable_64.o						\
+			  systable_32.o						\
 
 OBJ			= $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))			\
 
