@@ -35,10 +35,10 @@ OBJ			= $(addprefix $(OBJ_PATH)/,$(OBJ_NAME))			\
 
 .PHONY: all clean fclean re
 
-all: obj $(NAME)
+all: $(OBJ_PATH) $(NAME)
 
-obj:
-	@mkdir -p obj
+$(OBJ_PATH):
+	@mkdir -p $(OBJ_PATH)
 
 $(NAME): $(OBJ)
 	$(CC) $(CFLAGS) $^ -o $@
@@ -50,7 +50,7 @@ clean:
 	@rm -rf $(OBJ)
 
 fclean: clean
-	@rm -rf obj
+	@rm -rf $(OBJ_PATH)
 	@rm -rf $(NAME)
 
 re: fclean all
