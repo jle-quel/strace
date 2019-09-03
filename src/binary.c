@@ -26,19 +26,19 @@ void binary_destructor(struct s_binary *binary)
 
 void title_32(const struct s_binary *binary)
 {
-	printf("[+] Executing %s as process %d in 32 bit mode\n\n", binary->filepath, binary->pid);
+	printf("[!] Executing %s as process %d in 32 bit mode\n\n", binary->filepath, binary->pid);
 }
 
 void title_64(const struct s_binary *binary)
 {
-	printf("[+] Executing %s as process %d in 64 bit mode\n\n", binary->filepath, binary->pid);
+	printf("[!] Executing %s as process %d in 64 bit mode\n\n", binary->filepath, binary->pid);
 }
 
 void syscall_32(const struct s_binary *binary)
 {
 	const char *syscall = get_syscall_32(binary->regs.orig_rax);
 
-	fprintf(stderr, "%s", syscall);
+	fprintf(stderr, "[+] %s", syscall);
 	fprintf(stderr, "(");
 }
 
@@ -46,7 +46,7 @@ void syscall_64(const struct s_binary *binary)
 {
 	const char *syscall = get_syscall_64(binary->regs.orig_rax);
 
-	fprintf(stderr, "%s", syscall);
+	fprintf(stderr, "[+] %s", syscall);
 	fprintf(stderr, "(");
 }
 

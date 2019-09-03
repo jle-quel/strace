@@ -56,12 +56,12 @@ int tracer(const struct s_binary *binary)
 
 		if (WIFSIGNALED(status) == true)
 		{
-			printf("\n\n[+] process exited with signal %d\n", WTERMSIG(status));
+			printf("\n[!] process exited with signal %d\n", WTERMSIG(status));
 			break ;
 		}
 		else if (WIFEXITED(status) == true)
 		{
-			printf("\n\n[+] process exited with exit %d\n", WEXITSTATUS(status));
+			printf("\n[!] process exited with exit %d\n", WEXITSTATUS(status));
 			break ;
 		}
 		else if (WIFSTOPPED(status) == true)
@@ -84,7 +84,7 @@ int tracer(const struct s_binary *binary)
 			else
 			{
 				sig = WSTOPSIG(status);
-				printf("\n[+] process receive signal %d\n\n", WSTOPSIG(status));
+				printf("[!] process receive signal %d\n", WSTOPSIG(status));
 			}
 		}
 	}
